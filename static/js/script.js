@@ -18,7 +18,7 @@ function reset() {
 function generatorCat() {
     var image = document.createElement('img');
     var div = document.getElementById('flex-cat-gen');        
-    image.src="https://lh3.googleusercontent.com/proxy/B4lQIj7a3oTUn13NWBf_7Ba_MaYIqV2XQkyIiRM19KjbHgyu7Rr7cSd9-Yr13naEC4WcO2DHj0JxNKQN8p-c_Ar5kOKavtVLEIgzl_r7CyM"
+    image.src="https://media1.giphy.com/media/quO0X65yj6gw0/giphy.gif"
     div.appendChild(image);
 }
 
@@ -97,6 +97,63 @@ function lkmFrontEnd(humanImageChoice, botImageChoice, finalMessage) {
     document.getElementById('flex-box-lkm-div').appendChild(botDiv);
 }
 
+//change color
+
+var all_buttons = document.getElementsByTagName('button');
+console.log(all_buttons);
+
+var copyAllButtons = [];
+for (let i=0; i < all_buttons.length; i++) {
+    copyAllButtons.push(all_buttons[i].classList[1])
+}
+
+console.log(copyAllButtons);
+
+
+
+function buttonColorChange(buttonThingy) {
+    if (buttonThingy.value === 'red') {
+        buttonsRed();
+    } else if (buttonThingy.value === 'green') {
+        buttonsGreen();
+    } else if (buttonThingy.value === 'reset') {
+        buttonColorReset();
+    } else if (buttonThingy.value === 'random') {
+        randomColors();
+    }
+}
+
+function buttonsRed() {
+    for (let i=0; i< all_buttons.length; i++) {
+        all_buttons[i].classList.remove(all_buttons[i].classList[1]);
+        all_buttons[i].classList.add('btn-danger');
+    }
+} 
+
+function buttonsGreen() {
+    for (let i=0; i< all_buttons.length; i++) {
+        all_buttons[i].classList.remove(all_buttons[i].classList[1]);
+        all_buttons[i].classList.add('btn-success');
+    }
+}
+
+function buttonColorReset() {
+    for (let i=0; i < all_buttons.length; i++) {
+        all_buttons[i].classList.remove(all_buttons[i].classList[1]);
+        all_buttons[i].classList.add(copyAllButtons[i]);
+    }
+}
+
+function randomColors() {
+    var choices = ['btn-primary', 'btn-danger', 'btn-success', 'btn-warning']
+    
+    for (let i=0; i< all_buttons.length; i++) {
+        var randomNumber = Math.floor(Math.random() * 4);
+        all_buttons[i].classList.remove(all_buttons[i].classList[1])
+        all_buttons[i].classList.add(choices[randomNumber]);
+
+    }
+}
 
 
 
