@@ -64,11 +64,11 @@ function decideWinner(yourChoice, computerChoice) {
 
 function finalMessage([yourScore]) {
     if (yourScore === 0) {
-        return {'message':'You lost', 'color':'red'};
+        return {'message':'ПОБЈЕДА', 'color':'red'};
     } else if (yourScore === 0.5) {
-        return {'message': 'You tied', 'color': 'yellow'};
+        return {'message': 'НЕРЈЕШЕНО', 'color': 'yellow'};
     } else {
-        return {'message': 'You won', 'color':'green'};
+        return {'message': 'ИЗГУБИО СИ', 'color':'green'};
     }
 }
 
@@ -170,17 +170,26 @@ const YOU = blackjackGame['you']
 const DEALER = blackjackGame['dealer']
 
 const hitSound = new Audio('static/sounds/swish.m4a');
+const winSound = new Audio('static/sounds/cash.mp3');
+const lossSound = new Audio('static/sounds/aww.mp3');
 
+//dugmad
 
 document.querySelector('#blackjack-hit-button').addEventListener('click', blackjackHit);
 
+document.querySelector('#blackjack-stand-button').addEventListener('click', dealerLogic);
+
 document.querySelector('#blackjack-deal-button').addEventListener('click', blackjackDeal);
+
 
 function blackjackHit() {
     let card = randomCard();
     console.log(card);
     showCard(card, YOU);
-}
+    updateScore(card,YOU)
+    showScore(YOU);
+    console.log(YOU['score'])
+} 
 
 
 
@@ -192,15 +201,18 @@ function randomCard() {
 //bacanje karata
 
 function showCard(card, activePlayer) {
-    let cardImage = document.createElement('img');
-    cardImage.src = `static/images/${card}.png`;
-    document.querySelector(activePlayer['div']).appendChild(cardImage);
-    hitSound.play();
+    if (activePlayer['score'] <= 21) {
+        let cardImage = document.createElement('img');
+        cardImage.src = `static/images/${card}.png`;
+        document.querySelector(activePlayer['div']).appendChild(cardImage);
+        hitSound.play();
+    }
 }
 
 //brisanje karata
 
 function blackjackDeal() {
+    showResult(computeWinner());
     let yourImages = document.querySelector('#your-box').querySelectorAll('img');
     let dealerImages = document.querySelector('#dealer-box').querySelectorAll('img');
 
@@ -211,12 +223,94 @@ function blackjackDeal() {
     for (i=0; i < dealerImages.length; i++) {
         dealerImages[i].remove();
     }
+
+    YOU['score'] = 0;
+    DEALER['score'] = 0;
+
+    document.querySelector('#your-blackjack-result').textContent = 0;
+    document.querySelector('#dealer-blackjack-result').textContent = 0;
+
+    document.querySelector('#your-blackjack-result').style.color = '#ffffff'
+    document.querySelector('#dealer-blackjack-result').style.color = '#ffffff'
+
 }
 
-updat eScore(card, activePlayer) {
-    activePlayer['score'] += blackjackGame['cardsMap'][card];
+function updateScore(card, activePlayer) {
+    if (card === 'A') {
+    // ako do 21 fali 11 onda je kec 11, ostalo je 1
+        if (activePlayer['score'] + blackjackGame['cardsMap'][card][1] <= 21) {
+            activePlayer['score'] += blackjackGame['cardsMap'][card][1];            
+        } else {
+            activePlayer['score'] += blackjackGame['cardsMap']['card'][0];
+        } 
+    } else {
+        activePlayer['score'] += blackjackGame['cardsMap'][card];
+    }
+    
 }
 
+function showScore(activePlayer) {
+    if (activePlayer['score'] > 21) {
+        document.querySelector(activePlayer['scoreSpan']).textContent = 'BUST!';
+        document.querySelector(activePlayer['scoreSpan']).style.color = 'red';
+    } else { 
+        document.querySelector(activePlayer['scoreSpan']).textContent = activePlayer['score'];
+    }
+}
 
+function dealerLogic() {
+    let card = randomCard();
+    showCard(card, DEALER);
+    updateScore(card, DEALER);
+    showScore(DEALER);
+    showResult();
+}
+
+// ko je pobjednik
+
+function computeWinner() {
+    let winner;
+
+    if (YOU['score'] <= 21) {
+        if (YOU['score'] > DEALER['score'] || (DEALER['score'] > 21)) {
+            console.log('You won!');
+            winner = YOU;
+        } else if (YOU['score'] < DEALER['score']) {
+            console.log('You lost!')
+            winner = DEALER;
+        } else if (YOU['score'] === DEALER['score']) {
+            console.log('You drew!');
+        }
+    //kad odem preko 21 a diler ne ode
+    } else if (YOU['score'] > 21 && DEALER['score'] <= 21) {
+        console.log('You lost!');
+        winner = DEALER
+    } else if (YOU['score'] > 21 && DEALER['score'] > 21) {
+        console.log('You drew!');
+    }
+
+    console.log('Winner is', winner);
+    return winner;
+}
+
+function showResult(winner) {
+    let message, messageColor;
+
+    if (winner === YOU) {
+        message = 'You won!';
+        messageColor = 'green';
+        winSound.play();
+    } else if (winner === DEALER) {
+        message = 'You lost!';
+        messageColor = 'red';
+        lossSound.play();
+    } else {
+        message = 'You drew';
+        messageColor = 'black'
+    }
+    document.querySelector('#blackjack-result').textContent = message;
+    document.querySelector('#blackjack-result').style.color = messageColor;
+
+}
 
 
