@@ -271,6 +271,7 @@ function showScore(activePlayer) {
         document.querySelector(activePlayer['scoreSpan']).textContent = activePlayer['score'];
     }
 }
+
 // da bude pauza izmedju bacanja karata kod drugog igraca
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
